@@ -2,6 +2,10 @@ var React = require('react'),
 		ticker = require('../components/ticker.js'),
         _ = require('underscore');
 
+
+require('../../../submodules/snap-and-dock/DockingManager.js');
+
+
 var HyperGrid = React.createClass({
     componentDidMount: function(){
 
@@ -35,26 +39,26 @@ var HyperGrid = React.createClass({
             }, 100);
 
             jsonModel.fixedColumnClicked = (grid, cellData) => {
-                    console.log(jsonModel.getRow(cellData.gridCell.y));
-                    var row = jsonModel.getRow(cellData.gridCell.y)
 
-                    require('./child-window.js').createChildWindow({
-                        name: row.NAME,
-                        url: 'row-view.html?row=' + cellData.gridCell.y,
-                        autoShow: true,
-                        width: 400,
-                        height: 400,
-                        maxHeight: 400,
-                        maxWidth: 400,
-                        frame: false
-                    })
-
-/*
-
-Ask: 13.155027193983155AskQuantity: 1100Bid: 13.14517905506539BidQuantity: 300COUNTRY: "United States"Change: -0.19082777142769913Close: 0Date: Mon May 11 2015 23:10:20 GMT-0400 (Eastern Daylight Time)High: 27.485ICB: "2727"INDUS: "Industrials"Last: 13.14517905506539Low: 13.14517905506539NAME: "General Electric Co."Open: 27.21PercentChange: -1.4309213688208668PreviousClose: 27.04PreviousCloseDate: Sun May 10 2015 23:10:20 GMT-0400 (Eastern Daylight Time)SEC: "General Industrials"SUB_SEC: "Diversified Industrials"SUP_SEC: "Industrial Goods & Services"Spread: 0.009848138917766392TICKER: "GE"Time: 1431400220319Volume: 1869883
+                //console.log(jsonModel.getRow(cellData.gridCell.y));
+                var row = jsonModel.getRow(cellData.gridCell.y);
+                //debugger;
 
 
-                 */
+                require('./child-window.js').createChildWindow({
+                    name: row.NAME,
+                    url: 'row-view.html?row=' + cellData.gridCell.y,
+                    autoShow: true,
+                    width: 400,
+                    height: 400,
+                    maxHeight: 400,
+                    maxWidth: 400,
+                    frame: false,
+                    maximizable: false
+                }).then((wnd)=>{
+                    console.log('ill register', wnd);
+                    DockingManager.getInstance().register(wnd);
+                });
             };
 
             jsonModel.highlightCellOnHover= function(isColumnHovered, isRowHovered) {
@@ -65,7 +69,15 @@ Ask: 13.155027193983155AskQuantity: 1100Bid: 13.14517905506539BidQuantity: 300CO
             
     },
     render: function() {
-        return <fin-hypergrid id="stock-example"><fin-hypergrid-behavior-json></fin-hypergrid-behavior-json></fin-hypergrid>
+        return <div className="grid-contain">
+            <fin-hypergrid id="stock-example">
+                <fin-hypergrid-behavior-json></fin-hypergrid-behavior-json>
+            </fin-hypergrid>
+            <div className="actions">
+                <i className="fa fa-plus-circle"></i>
+                <i className="fa fa-arrow-circle-o-right"></i>
+            </div>
+        </div>
     }
 });
 // <fin-hypergrid id="q-example"></fin-hypergrid>

@@ -7,6 +7,52 @@
 	<body>
 		<script src="../../bower_components/react/react.js"></script>
     <script src="child.js"></script>
+    <script>
+	    var undockButton = null;
+
+function enableUndock(value) {
+
+    //document.getElementById('undockButton').style.display = value ? 'block' : 'none';
+}
+
+
+function onDock(message) {
+	console.log('on dock');
+    if (message.windowName === window.name) {
+        enableUndock(true);
+    }
+
+}
+
+function onUnDock(message) {
+    if (message.windowName === window.name) {
+        enableUndock(false);
+    }
+}
+
+function undock() {
+
+    fin.desktop.InterApplicationBus.publish('undock-window', {
+        windowName: window.name
+    });
+
+}
+
+fin.desktop.main(function() {
+
+    //undockButton = document.getElementById('undockButton');
+    //undockButton.addEventListener('click', undock);
+    enableUndock(false);
+
+    fin.desktop.InterApplicationBus.subscribe('*', 'window-docked', onDock);
+    fin.desktop.InterApplicationBus.subscribe('*', 'window-undocked', onUnDock);
+
+    fin.desktop.InterApplicationBus.publish('window-load', {
+        windowName: window.name
+    });
+
+});
+    </script>
 	</body>
 </html>
 

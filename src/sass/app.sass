@@ -3,6 +3,7 @@ $app-width: 960px
 $transition-time: 1s
 $top-bar-color: #1976D2
 $footer-bar-color: #2196F3;
+$actions-color: #FFEB3B
 
 /* z-index orders */
 $front: 10
@@ -112,7 +113,7 @@ body
 	margin:auto
 
 .top-bar
-	flex: 2
+	flex: 1
 	display: flex
 	background-color: $top-bar-color
 	z-index: $front
@@ -137,8 +138,8 @@ body
 
 #stock-example
 	display: block
-	width: 99.5%
-	height: 462px
+	width: 100%
+	height: 504px
 
 .button
 	padding: 5px;
@@ -325,3 +326,16 @@ body
 
 		.trade:hover, .order:hover
 			color: #E3F2FD!important
+
+
+.actions
+	position: absolute
+	top: 88%
+	left: 80%
+	i
+		flex: 1
+		font-size: 3rem
+		color: $actions-color
+		text-align: right
+		padding: 8px
+
