@@ -53,23 +53,23 @@ fin.desktop.main(()=>{
 	}
 
 
-	blotter = new fin.desktop.Window({
-				name: 'blotter',
-				url: 'hypergrid.html',
-				autoShow: false,
-        defaultWidth: 960,
-        maxWidth: 960,
-        minWidth: 960,
-        maxHeight: 594,
-        defaultHeight: 594,
-        minHeight: 594,
-				resizable:false,
-				frame: false,
-				maximizable: false,
-				saveWindowState: false
-			}, ()=>{
+	// blotter = new fin.desktop.Window({
+	// 			name: 'blotter',
+	// 			url: 'hypergrid.html',
+	// 			autoShow: false,
+ //        defaultWidth: 960,
+ //        maxWidth: 960,
+ //        minWidth: 960,
+ //        maxHeight: 594,
+ //        defaultHeight: 594,
+ //        minHeight: 594,
+	// 			resizable:false,
+	// 			frame: false,
+	// 			maximizable: false,
+	// 			saveWindowState: false
+	// 		}, ()=>{
 
-			})
+	// 		})
 });
 
 function showAsPromise (wnd) {
@@ -85,22 +85,45 @@ function showAsPromise (wnd) {
 }
 
 function setTranspatentAsPromise(arr, opacity) {
-	return new Promise((transparentFinished, transparentFailed)=>{
-		Promise.all(arr.map((item)=>{
-			return new Promise((resolve, reject)=>{
-				item.updateOptions({opacity: opacity}, ()=>{
-					resolve();
-				}, ()=>{
-					reject()
-				});
-			});
-		}))
-		.then(()=>{
-			transparentFinished();
-		}, ()=>{
-			transparentFailed();
-		});
-	});
+    return new Promise((transparentFinished, transparentFailed) => {
+        Promise.all(arr.map((item) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        item.updateOptions({
+                            opacity: opacity
+                        }, () => {
+                            resolve();
+                        }, () => {
+                            reject()
+                        });
+                    }, 1000);
+
+                });
+            }))
+            .then(() => {
+                transparentFinished();
+            }, () => {
+                transparentFailed();
+            });
+
+    });
+}
+
+function launchRuntimeAsset(subPath, args, callback, errorCallback) {
+    fin.desktop.System.getEnvironmentVariable(['LOCALAPPDATA', 'USERNAME'], function(result) {
+        var localAppData = result['LOCALAPPDATA'];
+        var userName = result['USERNAME'];
+
+        // Assuming on Windows XP when LOCALAPPDATA fails to expand. Using default location. Anything with registry setting for installDir will fail.
+        if (typeof localAppData !== 'string' || localAppData === 'LOCALAPPDATA') {
+            // Assuming on XP
+            localAppData = 'C:\\Documents and Settings\\' + userName + '\\Local Settings\\Application Data';
+        }
+
+        var runtimePath = localAppData + '\\OpenFin\\runtime\\' + fin.desktop.getVersion() + '\\OpenFin\\';
+
+        fin.desktop.System.launchExternalProcess(subPath, runtimePath + args, callback, errorCallback);
+    }, errorCallback);
 }
 
 
@@ -163,11 +186,14 @@ module.exports = React.createClass({
 			       ])[0]
 			       .map((item, index) => {
 			           return new Promise((resolve, reject) => {
-			               item.animate({
+			           		setTimeout(()=>{
+			           		 item.animate({
 			                   position: locations[index]
 			               }, {}, () => {
 			                   resolve()
 			               })
+			           		},1000);
+			               
 			           });
 			       })
 		   ).then(() => {
@@ -189,15 +215,10 @@ module.exports = React.createClass({
 		console.log('called hommie');
 	},
 	openExcel: function() {
-	    fin.desktop.main(function() {
-	        fin.desktop.main(function() {
-	            fin.desktop.System.launchExternalProcess('excel', '', function(e) {
-	                console.log('external process excel launched');
-	            }, function(e) {
-	                console.log('external process excel launch failed');
-	            });
-	        });
-	    });
+		fin.desktop.main(function() {
+		    launchRuntimeAsset('excel', 'hypergrid.xlsx', function() {},
+		        function(err) {});
+		});
 	},
 	getInitialState: function(){
 		return {
@@ -230,18 +251,18 @@ module.exports = React.createClass({
 // var floor = Math.floor;
 // var random = Math.random;
 
-function genPairs(arr) {
-    return arr.reduce(function(m, itm, idx, a) {
-	        m[0].push(m[1].splice(floor((random() * m[1].length)), 1)[0]);
-	        return m
-	    }, [[], arr.slice()])[0].reduce(function(m, itm, idx, a) {
+// function genPairs(arr) {
+//     return arr.reduce(function(m, itm, idx, a) {
+// 	        m[0].push(m[1].splice(floor((random() * m[1].length)), 1)[0]);
+// 	        return m
+// 	    }, [[], arr.slice()])[0].reduce(function(m, itm, idx, a) {
 
-	        if (!(idx % 2)) {
-	            m.push([itm, a[idx + 1]]);
-	        }
-	        return m
-	    }, [])
-}
+// 	        if (!(idx % 2)) {
+// 	            m.push([itm, a[idx + 1]]);
+// 	        }
+// 	        return m
+// 	    }, [])
+// }
 // function animateAsPromise (wnd, animations ,opts) {
 // 	return new Promise((resolve, reject)=>{
 // 		fin.desktop.main(()=>{
